@@ -43,9 +43,10 @@ EMAIL_VERIFICATION_LINK_SENT = "Email verification link has been sent to email"
 EMAIL_VERIFIED_SUCCESS = "Email verification successful"
 REGISTER_SUCCESS = "Registered successfully, now you can verify from link sent"
 PASSWORD_CHANGED_SUCCESS = "Password changed successfully"
+LOGIN_SUCCESS = "Successfully logged in"
 LOGOUT_SUCCESS = "Successfully logged out"
+REFRESH_TOKEN_SUCCESS = "Access token refreshed successfully"
 PROFILE_UPDATE_SUCCESS = 'Profile updated successfully'
-PROFILE_DELETE_SUCCESS = 'Profile deleted successfully'
 PROFILE_PIC_UPDATE_SUCCESS = 'Profile picture updated successfully'
 PROFILE_PIC_DELETE_SUCCESS = 'Profile picture deleted successfully'
 

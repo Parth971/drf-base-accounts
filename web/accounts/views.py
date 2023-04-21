@@ -9,10 +9,14 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView, TokenRefreshView
 
-from accounts.constants import RESTORE_PASSWORD_LINK_SENT, EMAIL_VERIFIED_SUCCESS, EMAIL_VERIFICATION_LINK_SENT, \
-    INVALID_TOKEN, LOGOUT_SUCCESS, PROFILE_PIC_DELETE_SUCCESS
+from accounts.constants import (
+    RESTORE_PASSWORD_LINK_SENT, EMAIL_VERIFIED_SUCCESS, EMAIL_VERIFICATION_LINK_SENT,
+    INVALID_TOKEN, LOGOUT_SUCCESS, PROFILE_PIC_DELETE_SUCCESS,
+    LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS, REGISTER_SUCCESS,
+    PROFILE_UPDATE_SUCCESS, PROFILE_PIC_UPDATE_SUCCESS, PASSWORD_CHANGED_SUCCESS
+)
 from accounts.mixins import ValidateRestorePassword
 from accounts.models import User, ActivateUserToken
 from accounts.serializers import (
@@ -28,6 +32,11 @@ class RegisterView(CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.data['message'] = REGISTER_SUCCESS
+        return response
+
 
 class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
@@ -35,6 +44,11 @@ class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        response.data['message'] = PROFILE_UPDATE_SUCCESS
+        return response
 
 
 class RetrieveUpdateDestroyProfilePicView(RetrieveUpdateDestroyAPIView):
@@ -52,9 +66,14 @@ class RetrieveUpdateDestroyProfilePicView(RetrieveUpdateDestroyAPIView):
         serializer.instance.profile_pic.delete()
         super().perform_update(serializer)
 
-    def destroy(self, request, *args, **kwargs):
-        response = super().destroy(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
         response.data = {'message': PROFILE_PIC_DELETE_SUCCESS}
+        return response
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        response.data['message'] = PROFILE_PIC_UPDATE_SUCCESS
         return response
 
 
@@ -100,11 +119,23 @@ class LoginView(TokenObtainPairView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.data['message'] = LOGIN_SUCCESS
+        return response
+
 
 class LogoutView(TokenBlacklistView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        response.data = {'message': LOGOUT_SUCCESS}
+        response.data['message'] = LOGOUT_SUCCESS
+        return response
+
+
+class RefreshTokenView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.data['message'] = REFRESH_TOKEN_SUCCESS
         return response
 
 
@@ -127,6 +158,11 @@ class RestorePasswordView(ValidateRestorePassword, UpdateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RestorePasswordSerializer
 
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        response.data['message'] = PASSWORD_CHANGED_SUCCESS
+        return response
+
 
 class ChangePasswordView(UpdateAPIView):
     queryset = User.objects.all()
@@ -134,3 +170,8 @@ class ChangePasswordView(UpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        response = super().put(request, *args, **kwargs)
+        response.data['message'] = PASSWORD_CHANGED_SUCCESS
+        return response

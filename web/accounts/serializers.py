@@ -7,9 +7,8 @@ from accounts.constants import (
     INVALID_EMAIL, INCORRECT_OLD_PASSWORD, PASSWORD_HELP_TEXT,
     PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED, EMAIL_NOT_UNIQUE, EMAIL_REQUIRED_ERROR,
     PASSWORD_REQUIRED_ERROR, FIRST_NAME_REQUIRED_ERROR, LAST_NAME_REQUIRED_ERROR, MOBILE_NUMBER_REQUIRED_ERROR,
-    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR, REGISTER_SUCCESS, PASSWORD_CHANGED_SUCCESS, LOGIN_FAILED,
-    PROFILE_UPDATE_SUCCESS, PROFILE_DELETE_SUCCESS, PROFILE_PIC_REQUIRED_ERROR,
-    PROFILE_PIC_UPDATE_SUCCESS
+    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR, LOGIN_FAILED,
+    PROFILE_PIC_REQUIRED_ERROR
 )
 from accounts.models import User
 from accounts.utils import send_email_verification_email
@@ -95,11 +94,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         send_email_verification_email(user)
         return user
 
-    @property
-    def data(self):
-        data = super().data
-        return {**data, 'message': REGISTER_SUCCESS}
-
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -146,16 +140,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             'email': {'read_only': True},
         }
 
-    @property
-    def data(self):
-        data = super().data
-        if self.context['request'].method == 'PUT':
-            data = {**data, 'message': PROFILE_UPDATE_SUCCESS}
-        elif self.context['request'].method == 'DELETE':
-            data = {**data, 'message': PROFILE_DELETE_SUCCESS}
-
-        return data
-
 
 class ProfilePicSerializer(serializers.ModelSerializer):
     profile_pic = Base64ImageField(required=True, allow_null=False, allow_empty_file=False, error_messages={
@@ -166,15 +150,6 @@ class ProfilePicSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('profile_pic',)
-
-    @property
-    def data(self):
-        data = super().data
-
-        if self.context['request'].method == 'PUT':
-            data = {**data, 'message': PROFILE_PIC_UPDATE_SUCCESS}
-
-        return data
 
 
 class EmailSerializer(serializers.Serializer):
@@ -266,10 +241,6 @@ class PasswordSerializer(serializers.Serializer):
         instance.save()
 
         return instance
-
-    @property
-    def data(self):
-        return {'message': PASSWORD_CHANGED_SUCCESS}
 
 
 class ChangePasswordSerializer(PasswordSerializer):

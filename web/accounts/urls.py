@@ -1,11 +1,10 @@
 from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView
 
 from accounts.views import (
     RegisterView, LoginView, ForgotPasswordView,
     ChangePasswordView, RestorePasswordView, VerifyEmailView,
     ResendVerifyEmailView, RetrieveUpdateProfileView,
-    RetrieveUpdateDestroyProfilePicView, LogoutView
+    RetrieveUpdateDestroyProfilePicView, LogoutView, RefreshTokenView
 )
 
 urlpatterns = [
@@ -18,7 +17,7 @@ urlpatterns = [
     path('restore-password/<int:uid>/<str:token>/', RestorePasswordView.as_view(), name='restore_password'),
 
     # endpoints which requires authentication
-    path('token/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/', RefreshTokenView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout_user'),
     path('change_password/', ChangePasswordView.as_view(), name='change_password'),
     path('profile/', RetrieveUpdateProfileView.as_view(), name='retrieve_update_profile'),
