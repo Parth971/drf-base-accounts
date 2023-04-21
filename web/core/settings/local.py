@@ -23,4 +23,4 @@ ALLOWED_HOSTS += [
 ]
 
 # Forgot password link expiry time
-PASSWORD_RESET_TIMEOUT = os.environ.get("PASSWORD_RESET_TIMEOUT")
+PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT"))
