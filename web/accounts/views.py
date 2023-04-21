@@ -3,12 +3,15 @@ from rest_framework.generics import (
     CreateAPIView, UpdateAPIView, get_object_or_404,
     RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
 )
+
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from accounts.constants import RESTORE_PASSWORD_LINK_SENT
+from accounts.constants import RESTORE_PASSWORD_LINK_SENT, EMAIL_VERIFIED_SUCCESS, EMAIL_VERIFICATION_LINK_SENT, \
+    INVALID_TOKEN
 from accounts.mixins import ValidateRestorePassword
 from accounts.models import User, ActivateUserToken
 from accounts.serializers import (
@@ -59,14 +62,21 @@ class VerifyEmailView(APIView):
         :param token:
         :return: status code 200 for success and 404 for invalid token.
         """
-        activate_user_token: ActivateUserToken = get_object_or_404(ActivateUserToken, token=token)
+        activate_user_token: ActivateUserToken = ActivateUserToken.get_object(query={'token': token})
+        if activate_user_token is None:
+            raise ValidationError({'error': INVALID_TOKEN})
+
         activate_user_token.user.activate()
         activate_user_token.delete_token()
-        return Response(status=status.HTTP_200_OK)
+        return Response(data={'message': EMAIL_VERIFIED_SUCCESS}, status=status.HTTP_200_OK)
 
 
-class ResendVerifyEmailView(APIView):
+class ResendVerifyEmailView(GenericAPIView):
     permission_classes = (AllowAny,)
+    serializer_class = ResendVerifyEmailSerializer
+
+    def send_mail(self, email):
+        send_email_verification_email(user=User.get_object(query={'email': email}))
 
     def post(self, request):
         """
@@ -74,10 +84,10 @@ class ResendVerifyEmailView(APIView):
         :param request: contains data attribute with entered user's email.
         :return: status code 200 for success and 400 for invalid email or already activated email with error message.
         """
-        serializer = ResendVerifyEmailSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        send_email_verification_email(user=User.get_user(query={'email': serializer.data['email']}))
-        return Response(status=status.HTTP_200_OK)
+        self.send_mail(email=serializer.data['email'])
+        return Response(data={'message': EMAIL_VERIFICATION_LINK_SENT}, status=status.HTTP_200_OK)
 
 
 class LoginView(TokenObtainPairView):
@@ -96,7 +106,7 @@ class ForgotPasswordView(APIView):
         """
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        send_forgot_password_email(user=User.get_user(query={'email': serializer.data['email']}))
+        send_forgot_password_email(user=User.get_object(query={'email': serializer.data['email']}))
         return Response(data={'message': RESTORE_PASSWORD_LINK_SENT}, status=status.HTTP_200_OK)
 
 

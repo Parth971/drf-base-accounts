@@ -21,7 +21,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     @classmethod
-    def get_user(cls, query):
+    def get_object(cls, query):
         return cls.objects.filter(**query).first()
 
     def activate(self):
@@ -47,6 +47,10 @@ class ActivateUserToken(models.Model):
 
     def __str__(self):
         return self.user.email
+
+    @classmethod
+    def get_object(cls, query):
+        return cls.objects.filter(**query).first()
 
     def delete_token(self):
         self.__class__.objects.filter(user=self.user).delete()

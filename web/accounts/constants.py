@@ -13,6 +13,16 @@ LAST_NAME_LENGTH_ERROR = 'Last name should have length between 3 to 20'
 INVALID_PHONE_NUMBER = 'Mobile number is not valid'
 EMAIL_NOT_ACTIVATED = "Email is not active"
 EMAIL_ALREADY_ACTIVATED = "Email is already active"
+EMAIL_NOT_UNIQUE = "This email is already used"
+EMAIL_REQUIRED_ERROR = 'Email is required'
+PASSWORD_REQUIRED_ERROR = 'Password is required'
+FIRST_NAME_REQUIRED_ERROR = 'First name is required'
+LAST_NAME_REQUIRED_ERROR = 'Last name is required'
+MOBILE_NUMBER_REQUIRED_ERROR = 'Mobile number is required'
+JOB_TITLE_REQUIRED_ERROR = 'Job title is required'
+COMPANY_NAME_REQUIRED_ERROR = 'Company name is required'
+INVALID_UID = 'UID Invalid'
+INVALID_TOKEN = 'Token Invalid'
 
 # Help text
 PASSWORD_HELP_TEXT = 'Password must contain 1 special char, 1 digit, 1 small alphabet, and 1 capital alphabet'
@@ -27,6 +37,8 @@ PHONE_NUMBER_REGEX = "^\\+?[1-9][0-9]{7,14}$"
 
 # Message
 RESTORE_PASSWORD_LINK_SENT = "Restore password link has been sent to email"
+EMAIL_VERIFICATION_LINK_SENT = "Email verification link has been sent to email"
+EMAIL_VERIFIED_SUCCESS = "Email verification successful"
 
 # Variables
 FIRST_NAME_MINIMUM_LENGTH = LAST_NAME_MINIMUM_LENGTH = 3

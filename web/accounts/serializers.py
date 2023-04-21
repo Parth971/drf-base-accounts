@@ -4,7 +4,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from accounts.constants import (
     INVALID_EMAIL, INCORRECT_OLD_PASSWORD, PASSWORD_HELP_TEXT,
-    PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED
+    PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED, EMAIL_NOT_UNIQUE, EMAIL_REQUIRED_ERROR,
+    PASSWORD_REQUIRED_ERROR, FIRST_NAME_REQUIRED_ERROR, LAST_NAME_REQUIRED_ERROR, MOBILE_NUMBER_REQUIRED_ERROR,
+    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR
 )
 from accounts.models import User
 from accounts.utils import send_email_verification_email
@@ -24,23 +26,59 @@ class LoginSerializer(TokenObtainPairSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        validators=[UniqueValidator(queryset=User.objects.all(), message=EMAIL_NOT_UNIQUE)],
+        error_messages={'required': EMAIL_REQUIRED_ERROR, 'blank': EMAIL_REQUIRED_ERROR}
     )
 
     password = serializers.CharField(
         write_only=True,
         required=True,
         help_text=PASSWORD_HELP_TEXT,
-        validators=[validate_password]
+        validators=[validate_password],
+        error_messages={'required': PASSWORD_REQUIRED_ERROR, 'blank': PASSWORD_REQUIRED_ERROR}
     )
 
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email', 'password', 'job_title', 'company_name', 'mobile_number')
         extra_kwargs = {
-            'first_name': {'required': True, 'validators': [validate_first_name]},
-            'last_name': {'required': True, 'validators': [validate_last_name]},
-            'mobile_number': {'required': True, 'validators': [validate_mobile_number]}
+            'first_name': {
+                'required': True,
+                'allow_blank': False,
+                'validators': [validate_first_name],
+                'error_messages': {
+                    'required': FIRST_NAME_REQUIRED_ERROR,
+                    'blank': FIRST_NAME_REQUIRED_ERROR
+                }
+            },
+            'last_name': {
+                'required': True,
+                'allow_blank': False,
+                'validators': [validate_last_name],
+                'error_messages': {
+                    'required': LAST_NAME_REQUIRED_ERROR,
+                    'blank': LAST_NAME_REQUIRED_ERROR
+                }
+            },
+            'mobile_number': {
+                'validators': [validate_mobile_number],
+                'error_messages': {
+                    'required': MOBILE_NUMBER_REQUIRED_ERROR,
+                    'blank': MOBILE_NUMBER_REQUIRED_ERROR
+                }
+            },
+            'job_title': {
+                'error_messages': {
+                    'required': JOB_TITLE_REQUIRED_ERROR,
+                    'blank': JOB_TITLE_REQUIRED_ERROR
+                }
+            },
+            'company_name': {
+                'error_messages': {
+                    'required': COMPANY_NAME_REQUIRED_ERROR,
+                    'blank': COMPANY_NAME_REQUIRED_ERROR
+                }
+            }
         }
 
     def create(self, validated_data):
@@ -75,7 +113,10 @@ class ProfilePicSerializer(serializers.ModelSerializer):
 
 
 class EmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(error_messages={
+        'required': EMAIL_REQUIRED_ERROR,
+        'blank': EMAIL_REQUIRED_ERROR,
+    })
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -87,7 +128,7 @@ class EmailSerializer(serializers.Serializer):
         :rtype: dict
         """
         email = attrs.get('email')
-        self.user = User.get_user(query={'email': email})
+        self.user = User.get_object(query={'email': email})
         if not self.user:
             raise serializers.ValidationError({'email': INVALID_EMAIL})
 
@@ -119,8 +160,23 @@ class ForgotPasswordSerializer(EmailSerializer):
 
 
 class PasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        validators=[validate_password],
+        error_messages={
+            'required': PASSWORD_REQUIRED_ERROR,
+            'blank': PASSWORD_REQUIRED_ERROR,
+        }
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        required=True,
+        error_messages={
+            'required': PASSWORD_REQUIRED_ERROR,
+            'blank': PASSWORD_REQUIRED_ERROR,
+        }
+    )
 
     class Meta:
         model = User
@@ -146,9 +202,20 @@ class PasswordSerializer(serializers.Serializer):
 
         return instance
 
+    @property
+    def data(self):
+        return {'message': "Password changed successfully"}
+
 
 class ChangePasswordSerializer(PasswordSerializer):
-    old_password = serializers.CharField(write_only=True, required=True)
+    old_password = serializers.CharField(
+        write_only=True,
+        required=True,
+        error_messages={
+            'required': PASSWORD_REQUIRED_ERROR,
+            'blank': PASSWORD_REQUIRED_ERROR,
+        }
+    )
 
     class Meta:
         model = User
