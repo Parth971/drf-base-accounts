@@ -1,7 +1,8 @@
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import (
-    CreateAPIView, UpdateAPIView, get_object_or_404,
-    RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
+    CreateAPIView, UpdateAPIView, GenericAPIView,
+    RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView,
 )
 
 from rest_framework.exceptions import ValidationError
