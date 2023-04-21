@@ -29,3 +29,10 @@ def send_mail(to, template, context):
     html_content = render_to_string(f'accounts/emails/{template}.html', context)
     msg = EmailMessage(context['subject'], html_content, to=[to])
     msg.send()
+
+
+def upload_to(instance, filename):
+    striped_email = instance.email.split("@")[0]
+    extension = filename.split('.')[-1]
+    return f'accounts/images/{striped_email}.{extension}'
+

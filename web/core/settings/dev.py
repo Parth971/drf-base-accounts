@@ -24,3 +24,7 @@ FRONT_END_DOMAIN = os.environ.get('FRONT_END_DOMAIN')
 
 # Forgot password link expiry time
 PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT"))
+
+MEDIA_ROOT = BASE_DIR / 'media_files'
+MEDIA_URL = '/media/'
+

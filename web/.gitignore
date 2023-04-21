@@ -166,3 +166,5 @@ dump.rdb
 !**/migrations
 !**/migrations/__init__.py
 
+media_files/
+
