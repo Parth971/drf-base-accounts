@@ -1,0 +1,46 @@
+[
+  {
+    "url": "https://www.lpp.nhs.uk/frameworks/",
+    "domain_url": "https://www.lpp.nhs.uk/",
+    "selectors": [
+      {
+        "title": "lpp_nhs_list_link",
+        "type": "css",
+        "value": "div.card-block a::attr(href)",
+        "is_link_to_follow": true
+      }
+    ],
+    "data_gathering_selectors": [
+      {
+        "title": "Framework_Name",
+        "type": "css",
+        "value": "body > main > div:nth-child(3) > div > div:nth-child(1) > div > h1::text"
+      },
+      {
+        "title": "Start_Date",
+        "type": "xpath",
+        "value": "///*[@id=\"collapse-A\"]/div/text()[2]"
+      },
+      {
+        "title": "End_Date",
+        "type": "xpath",
+        "value": "//*[@id=\"collapse-A\"]/div/text()[4]"
+      },
+      {
+        "title": "Number of Lots",
+        "type": "xpath",
+        "value": "//*[@id=\"collapse-C\"]/div/ul/li[last()]/text()"
+      },
+      {
+        "title": "Lot Name",
+        "type": "css",
+        "value": "#collapse-C > div > ul > li::text"
+      },
+      {
+        "title": "Framework Description",
+        "type": "css",
+        "value": "body > main > div:nth-child(3) > div > div:nth-child(1) > div > p::text"
+      }
+    ]
+  }
+]

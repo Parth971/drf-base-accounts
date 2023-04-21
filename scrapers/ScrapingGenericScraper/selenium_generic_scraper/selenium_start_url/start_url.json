@@ -1,0 +1,79 @@
+[
+  {
+    "url": "https://www.crowncommercial.gov.uk/agreements",
+    "domain_url": "https://www.crowncommercial.gov.uk",
+    "selectors": [
+      {
+        "title": "crowncommerical_list_link",
+        "type": "xpath",
+        "value": "//div[@class='govuk-grid-column-two-thirds']/ul[@class='govuk-list govuk-list--frameworks']/li/h3/a",
+        "attribute": "href",
+        "is_link_to_follow": true
+      }
+    ],
+
+    "next_page_selectors": [
+      {
+        "title": "Next_Page",
+        "type": "xpath",
+        "attribute": "href",
+        "value": "//li[@class='pagination__item pagination__item--next']/a"
+      }
+    ],
+
+    "data_selectors": [
+      {
+        "title": "title",
+        "type": "xpath",
+        "attribute": "innerHTML",
+        "value": "//*[@id=\"main-content\"]/div[2]/div[4]/ul[1]/li[1]/p"
+      },
+      {
+        "title": "body",
+        "type": "xpath",
+        "attribute": "innerHTML",
+        "value": "//*[@id=\"main-content\"]/div[2]/div[4]/ul[1]/li[1]/p"
+      }
+    ],
+
+
+     "data_gathering_selectors": [
+      {
+        "title": "Framework_Name",
+        "type": "xpath",
+        "attribute": "innerText",
+        "value": "//h1[@class='govuk-heading-xl page-title']"
+      },
+      {
+        "title": "Start_Date",
+        "type": "xpath",
+        "attribute": "innerText",
+        "value": "//dl[@class='govuk-list govuk-list--definition']/dd[2]"
+      },
+      {
+        "title": "End_Date",
+        "type": "xpath",
+        "attribute": "innerText",
+        "value": "//dl[@class='govuk-list govuk-list--definition']/dd[3]"
+      },
+      {
+        "title": "Number of Lots",
+        "type": "xpath",
+        "attribute": "innerText",
+        "value": "//dl[@class='govuk-list govuk-list--definition']/dd[4]"
+      },
+      {
+        "title": "Lot Name",
+        "type": "xpath",
+        "attribute": "innerHTML",
+        "value": "//span[@class='apollo-list--definition__key__inner']"
+      },
+      {
+        "title": "Lot Description",
+        "type": "xpath",
+        "attribute": "textContent",
+        "value": "//div[@class='govuk-!-margin-bottom-2']"
+      }
+    ]
+  }
+]

@@ -1,0 +1,61 @@
+[
+  {
+    "url": "https://www.sbs.nhs.uk/framework-agreement-search",
+    "domain_url": "https://www.sbs.nhs.uk/",
+    "selectors": [
+      {
+        "title": "nhs_sbs_list_link",
+        "type": "xpath",
+        "value": "//a[@class='card__link card__link--heading']/@href",
+        "is_link_to_follow": true
+      }
+    ],
+    "next_page_selectors": [
+      {
+        "title": "Next_Page",
+        "type": "xpath",
+        "value": "//a[@class='paging__link paging__link--next']/@href"
+      }
+    ],
+    "data_selectors": [
+      {
+        "title": "framework_brief",
+        "type": "xpath",
+        "value": "//*[@id=\"maincontent\"]/div/div[4]/div[1]/div/div[3]/div/div/div/h3/a/text()"
+      }
+    ],
+
+    "data_gathering_selectors": [
+      {
+        "title": "Framework_Name",
+        "type": "css",
+        "value": "h1 *::text"
+      },
+      {
+        "title": "Start_Date",
+        "type": "css",
+        "value": "p:contains(\"start?\") ::text,p:contains(\"What is the framework agreement duration\") ::text,p:contains(\"Term of the framework agreement\") ::text"
+      },
+      {
+        "title": "End_Date",
+        "type": "css",
+        "value": "p:contains(\"start?\") ::text,p:contains(\"What is the framework agreement duration\") ::text,p:contains(\"Term of the framework agreement\") ::text"
+      },
+      {
+        "title": "Lot Name",
+        "type": "xpath",
+        "value": "//span[not(parent::h3) and contains(text(),'Lot')]/text()"
+      },
+      {
+        "title": "Framework Description",
+        "type": "xpath",
+        "value": "//*[@id=\"maincontent\"]/div[1]/div[3]/div/p[2]/text()"
+      },
+      {
+        "title": "supplier name",
+        "type": "xpath",
+        "value": "//table[@class='d1general']/tbody/tr/td[3]/p/text() | //*[@id=\"maincontent\"]/div[1]/div[3]/div/div[3]/table/tbody/tr/td/p//text()"
+      }
+    ]
+  }
+]

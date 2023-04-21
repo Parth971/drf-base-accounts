@@ -1,0 +1,77 @@
+[
+  {
+    "url": "https://www.crowncommercial.gov.uk/agreements",
+    "domain_url": "https://www.crowncommercial.gov.uk",
+    "selectors": [
+      {
+        "title": "crowncommerical_list_link",
+        "type": "xpath",
+        "value": "//div[@class='govuk-grid-column-two-thirds']/ul[@class='govuk-list govuk-list--frameworks']/li/h3/a/@href",
+        "is_link_to_follow": true
+      }
+    ],
+
+    "next_page_selectors": [
+      {
+        "title": "Next_Page",
+        "type": "xpath",
+        "value": "//li[@class='pagination__item pagination__item--next']/a/@href"
+      }
+    ],
+    "data_selectors": [
+      {
+        "title": "title",
+        "type": "xpath",
+        "value": ".//p[@class='govuk-body-s']//text()"
+      },
+      {
+        "title": "body",
+        "type": "xpath",
+        "value": ".//p[@class='govuk-body-s']//text()"
+      }
+    ],
+
+    "data_gathering_selectors": [
+      {
+        "title": "Framework_Name",
+        "type": "xpath",
+        "value": "//h1[@class='govuk-heading-xl page-title']//text()"
+      },
+      {
+        "title": "Start_Date",
+        "type": "xpath",
+        "value": "//dl[@class='govuk-list govuk-list--definition']/dd[2]//text()"
+      },
+      {
+        "title": "End_Date",
+        "type": "xpath",
+        "value": "//dl[@class='govuk-list govuk-list--definition']/dd[3]//text()"
+      },
+      {
+        "title": "Number of Lots",
+        "type": "xpath",
+        "value": "//dl[@class='govuk-list govuk-list--definition']/dd[4]//text()"
+      },
+      {
+        "title": "Lot Name",
+        "type": "xpath",
+        "value": "//span[@class='apollo-list--definition__key__inner']//text()"
+      },
+      {
+        "title": "Framework Description",
+        "type": "css",
+        "value": "div.wysiwyg-content *::text"
+      },
+      {
+        "title": "Number of lots",
+        "type": "css",
+        "value": "#main-content > div:nth-child(2) > div.govuk-grid-column-one-third > aside > div:nth-child(1) > dl > dd:nth-child(8)::text"
+      },
+      {
+        "title": "Number of lots",
+        "type": "xpath",
+        "value": "//div[@class='govuk-!-margin-bottom-2']//text()"
+      }
+    ]
+  }
+]
