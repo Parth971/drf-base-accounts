@@ -39,6 +39,8 @@ PHONE_NUMBER_REGEX = "^\\+?[1-9][0-9]{7,14}$"
 RESTORE_PASSWORD_LINK_SENT = "Restore password link has been sent to email"
 EMAIL_VERIFICATION_LINK_SENT = "Email verification link has been sent to email"
 EMAIL_VERIFIED_SUCCESS = "Email verification successful"
+REGISTER_SUCCESS = "Registered successfully"
+PASSWORD_CHANGED_SUCCESS = "Password changed successfully"
 
 # Variables
 FIRST_NAME_MINIMUM_LENGTH = LAST_NAME_MINIMUM_LENGTH = 3

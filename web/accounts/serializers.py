@@ -6,7 +6,7 @@ from accounts.constants import (
     INVALID_EMAIL, INCORRECT_OLD_PASSWORD, PASSWORD_HELP_TEXT,
     PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED, EMAIL_NOT_UNIQUE, EMAIL_REQUIRED_ERROR,
     PASSWORD_REQUIRED_ERROR, FIRST_NAME_REQUIRED_ERROR, LAST_NAME_REQUIRED_ERROR, MOBILE_NUMBER_REQUIRED_ERROR,
-    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR
+    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR, REGISTER_SUCCESS, PASSWORD_CHANGED_SUCCESS
 )
 from accounts.models import User
 from accounts.utils import send_email_verification_email
@@ -89,6 +89,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data, is_active=False)
         send_email_verification_email(user)
         return user
+
+    @property
+    def data(self):
+        return {'message': REGISTER_SUCCESS}
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -204,7 +208,7 @@ class PasswordSerializer(serializers.Serializer):
 
     @property
     def data(self):
-        return {'message': "Password changed successfully"}
+        return {'message': PASSWORD_CHANGED_SUCCESS}
 
 
 class ChangePasswordSerializer(PasswordSerializer):
