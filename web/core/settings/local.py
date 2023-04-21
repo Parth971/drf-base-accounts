@@ -21,3 +21,6 @@ FRONT_END_DOMAIN = os.environ.get('FRONT_END_DOMAIN')
 ALLOWED_HOSTS += [
     FRONT_END_DOMAIN
 ]
+
+# Forgot password link expiry time
+PASSWORD_RESET_TIMEOUT = os.environ.get("PASSWORD_RESET_TIMEOUT")

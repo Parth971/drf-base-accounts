@@ -1,10 +1,14 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from accounts.constants import PASSWORD_MISMATCH, INVALID_EMAIL, INCORRECT_OLD_PASSWORD
+from accounts.constants import (
+    INVALID_EMAIL, INCORRECT_OLD_PASSWORD, PASSWORD_HELP_TEXT,
+    PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED
+)
 from accounts.models import User
+from accounts.utils import send_email_verification_email
+from accounts.validators import validate_password, validate_first_name, validate_last_name, validate_mobile_number
 
 
 class LoginSerializer(TokenObtainPairSerializer):
@@ -24,40 +28,63 @@ class RegisterSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
 
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        help_text=PASSWORD_HELP_TEXT,
+        validators=[validate_password]
+    )
 
     class Meta:
         model = User
-        fields = ('password', 'password2', 'email', 'first_name', 'last_name')
+        fields = ('first_name', 'last_name', 'email', 'password', 'job_title', 'company_name', 'mobile_number')
         extra_kwargs = {
-            'first_name': {'required': True},
-            'last_name': {'required': True}
+            'first_name': {'required': True, 'validators': [validate_first_name]},
+            'last_name': {'required': True, 'validators': [validate_last_name]},
+            'mobile_number': {'required': True, 'validators': [validate_mobile_number]}
         }
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": PASSWORD_MISMATCH})
-
-        return attrs
-
     def create(self, validated_data):
-        return User.objects.create_user(
+        user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
+            job_title=validated_data['job_title'],
+            company_name=validated_data['company_name'],
+            mobile_number=validated_data['mobile_number'],
+            is_active=False
         )
+        send_email_verification_email(user)
+        return user
 
 
-class ForgotPasswordSerializer(serializers.Serializer):
+class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = None
 
     def validate(self, attrs):
         email = attrs.get('email')
-        if not User.objects.filter(email=email).exists():
+        self.user = User.get_user(query={'email': email})
+        if not self.user:
             raise serializers.ValidationError({'email': INVALID_EMAIL})
 
+        return attrs
+
+
+class ResendVerifyEmailSerializer(EmailSerializer):
+    pass
+
+
+class ForgotPasswordSerializer(EmailSerializer):
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if self.user and not self.user.is_active:
+            raise serializers.ValidationError({'email': EMAIL_NOT_ACTIVATED})
         return attrs
 
 
