@@ -80,4 +80,6 @@ class RestorePasswordView(GenericAPIView, ValidateRestorePassword):
 class ChangePasswordView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = ChangePasswordSerializer
-    lookup_url_kwarg = 'user_id'
+
+    def get_object(self):
+        return self.request.user

@@ -19,5 +19,5 @@ urlpatterns = [
     # endpoints which requires authentication
     path('token/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', TokenBlacklistView.as_view(), name='logout_user'),
-    path('change_password/<int:user_id>/', ChangePasswordView.as_view(), name='change_password'),
+    path('change_password/', ChangePasswordView.as_view(), name='change_password'),
 ]
