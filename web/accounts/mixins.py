@@ -8,6 +8,7 @@ class ValidateRestorePassword:
     token_generator = PasswordResetTokenGenerator()
 
     def __init__(self):
+        self.kwargs = None
         self.user = None
 
     def is_token_valid(self, token):
@@ -24,4 +25,8 @@ class ValidateRestorePassword:
         if not self.is_token_valid(token):
             raise ValidationError({'error': 'Token invalid'})
 
+    def get_object(self):
+        token = self.kwargs.get('token')
+        uid = self.kwargs.get('uid')
+        self.validate(uid, token)
         return self.user

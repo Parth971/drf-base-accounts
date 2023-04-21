@@ -4,7 +4,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from accounts.constants import (
     INVALID_EMAIL, INCORRECT_OLD_PASSWORD, PASSWORD_HELP_TEXT,
-    PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED
+    PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED
 )
 from accounts.models import User
 from accounts.utils import send_email_verification_email
@@ -12,7 +12,6 @@ from accounts.validators import validate_password, validate_first_name, validate
 
 
 class LoginSerializer(TokenObtainPairSerializer):
-
     @classmethod
     def get_token(cls, user):
         token = super(LoginSerializer, cls).get_token(user)
@@ -45,6 +44,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        """
+        This function will create user instance and send email regarding email verification.
+        :rtype: User object
+        """
         user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
@@ -67,6 +70,10 @@ class EmailSerializer(serializers.Serializer):
         self.user = None
 
     def validate(self, attrs):
+        """
+        This function will check if user exists for given email field, if not raise Validation error.
+        :rtype: dict
+        """
         email = attrs.get('email')
         self.user = User.get_user(query={'email': email})
         if not self.user:
@@ -76,58 +83,74 @@ class EmailSerializer(serializers.Serializer):
 
 
 class ResendVerifyEmailSerializer(EmailSerializer):
-    pass
+    def validate(self, attrs):
+        """
+        This function will check if user should not be active, if user already active it will raise Validation error.
+        :rtype: dict
+        """
+        attrs = super().validate(attrs)
+        if self.user and self.user.is_active:
+            raise serializers.ValidationError({'email': EMAIL_ALREADY_ACTIVATED})
+        return attrs
 
 
 class ForgotPasswordSerializer(EmailSerializer):
-
     def validate(self, attrs):
+        """
+        This function will check if user is active, if user not active it will raise Validation error.
+        :rtype: dict
+        """
         attrs = super().validate(attrs)
         if self.user and not self.user.is_active:
             raise serializers.ValidationError({'email': EMAIL_NOT_ACTIVATED})
         return attrs
 
 
-class ChangePasswordSerializer(serializers.ModelSerializer):
+class PasswordSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True, required=True)
-    old_password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ('old_password', 'password', 'password2')
+        fields = ('password', 'password2')
 
     def validate(self, attrs):
+        """
+        This function will match both password, if not same then raise Validation error.
+        :rtype: dict
+        """
         if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({"password": PASSWORD_MISMATCH})
 
         return attrs
 
-    def validate_old_password(self, value):
-        user = self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError(INCORRECT_OLD_PASSWORD)
-        return value
-
     def update(self, instance, validated_data):
+        """
+        This function will update new password of user.
+        :rtype: User object
+        """
         instance.set_password(validated_data['password'])
         instance.save()
 
         return instance
 
 
-class RestorePasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+class ChangePasswordSerializer(PasswordSerializer):
+    old_password = serializers.CharField(write_only=True, required=True)
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password2": PASSWORD_MISMATCH})
+    class Meta:
+        model = User
+        fields = ('old_password', 'password', 'password2')
 
-        return attrs
+    def validate_old_password(self, value):
+        """
+        This function will check user's password matches or not. If not, it will raise Serializer error.
+        :rtype: dict
+        """
+        if not self.instance.check_password(value):
+            raise serializers.ValidationError(INCORRECT_OLD_PASSWORD)
+        return value
 
-    def update(self, validated_data, **kwargs):
-        user = self.context['user']
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+
+class RestorePasswordSerializer(PasswordSerializer):
+    pass

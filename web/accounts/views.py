@@ -25,6 +25,12 @@ class VerifyEmailView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, token):
+        """
+        Get request to check token and activate user.
+        :param request:
+        :param token:
+        :return: status code 200 for success and 404 for invalid token.
+        """
         activate_user_token: ActivateUserToken = get_object_or_404(ActivateUserToken, token=token)
         activate_user_token.user.activate()
         activate_user_token.delete_token()
@@ -35,6 +41,11 @@ class ResendVerifyEmailView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        """
+        Post request to send email regarding email verification.
+        :param request: contains data attribute with entered user's email.
+        :return: status code 200 for success and 400 for invalid email or already activated email with error message.
+        """
         serializer = ResendVerifyEmailSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         send_email_verification_email(user=User.get_user(query={'email': serializer.data['email']}))
@@ -50,31 +61,20 @@ class ForgotPasswordView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        """
+        Post request to send email regarding restore password.
+        :param request: contains data attribute with entered user's email.
+        :return: status code 200 for success and 400 for invalid email or not activated email with error message.
+        """
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         send_forgot_password_email(user=User.get_user(query={'email': serializer.data['email']}))
         return Response(data={'message': RESTORE_PASSWORD_LINK_SENT}, status=status.HTTP_200_OK)
 
 
-class RestorePasswordView(GenericAPIView, ValidateRestorePassword):
+class RestorePasswordView(ValidateRestorePassword, UpdateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RestorePasswordSerializer
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.user = None
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['user'] = self.user
-        return context
-
-    def post(self, request, uid, token, **kwargs):
-        self.user = self.validate(uid, token)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.update(validated_data=serializer.validated_data)
-        return Response(status=status.HTTP_200_OK)
 
 
 class ChangePasswordView(UpdateAPIView):

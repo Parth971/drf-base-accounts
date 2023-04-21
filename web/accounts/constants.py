@@ -12,6 +12,7 @@ FIRST_NAME_LENGTH_ERROR = 'First name should have length between 3 to 20'
 LAST_NAME_LENGTH_ERROR = 'Last name should have length between 3 to 20'
 INVALID_PHONE_NUMBER = 'Mobile number is not valid'
 EMAIL_NOT_ACTIVATED = "Email is not active"
+EMAIL_ALREADY_ACTIVATED = "Email is already active"
 
 # Help text
 PASSWORD_HELP_TEXT = 'Password must contain 1 special char, 1 digit, 1 small alphabet, and 1 capital alphabet'
