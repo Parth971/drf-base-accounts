@@ -13,7 +13,7 @@ LAST_NAME_LENGTH_ERROR = 'Last name should have length between 3 to 20'
 INVALID_PHONE_NUMBER = 'Mobile number is not valid'
 EMAIL_NOT_ACTIVATED = "Email is not active"
 EMAIL_ALREADY_ACTIVATED = "Email is already active"
-EMAIL_NOT_UNIQUE = "This email is already used"
+EMAIL_NOT_UNIQUE = "Email is already used"
 EMAIL_REQUIRED_ERROR = 'Email is required'
 PASSWORD_REQUIRED_ERROR = 'Password is required'
 FIRST_NAME_REQUIRED_ERROR = 'First name is required'
@@ -21,8 +21,10 @@ LAST_NAME_REQUIRED_ERROR = 'Last name is required'
 MOBILE_NUMBER_REQUIRED_ERROR = 'Mobile number is required'
 JOB_TITLE_REQUIRED_ERROR = 'Job title is required'
 COMPANY_NAME_REQUIRED_ERROR = 'Company name is required'
+PROFILE_PIC_REQUIRED_ERROR = 'Profile picture is required'
 INVALID_UID = 'UID Invalid'
 INVALID_TOKEN = 'Token Invalid'
+LOGIN_FAILED = "No active account found with the given credentials"
 
 # Help text
 PASSWORD_HELP_TEXT = 'Password must contain 1 special char, 1 digit, 1 small alphabet, and 1 capital alphabet'
@@ -39,8 +41,13 @@ PHONE_NUMBER_REGEX = "^\\+?[1-9][0-9]{7,14}$"
 RESTORE_PASSWORD_LINK_SENT = "Restore password link has been sent to email"
 EMAIL_VERIFICATION_LINK_SENT = "Email verification link has been sent to email"
 EMAIL_VERIFIED_SUCCESS = "Email verification successful"
-REGISTER_SUCCESS = "Registered successfully"
+REGISTER_SUCCESS = "Registered successfully, now you can verify from link sent"
 PASSWORD_CHANGED_SUCCESS = "Password changed successfully"
+LOGOUT_SUCCESS = "Successfully logged out"
+PROFILE_UPDATE_SUCCESS = 'Profile updated successfully'
+PROFILE_DELETE_SUCCESS = 'Profile deleted successfully'
+PROFILE_PIC_UPDATE_SUCCESS = 'Profile picture updated successfully'
+PROFILE_PIC_DELETE_SUCCESS = 'Profile picture deleted successfully'
 
 # Variables
 FIRST_NAME_MINIMUM_LENGTH = LAST_NAME_MINIMUM_LENGTH = 3

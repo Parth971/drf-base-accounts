@@ -21,10 +21,10 @@ class ValidateRestorePassword:
 
     def validate(self, uid, token):
         if not self.is_uid_valid(uid):
-            raise ValidationError({'error': INVALID_UID})
+            raise ValidationError({'message': INVALID_UID})
 
         if not self.is_token_valid(token):
-            raise ValidationError({'error': INVALID_TOKEN})
+            raise ValidationError({'message': INVALID_TOKEN})
 
     def get_object(self):
         token = self.kwargs.get('token')

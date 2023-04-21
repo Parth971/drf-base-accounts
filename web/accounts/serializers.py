@@ -1,19 +1,23 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenObtainSerializer
 
 from accounts.constants import (
     INVALID_EMAIL, INCORRECT_OLD_PASSWORD, PASSWORD_HELP_TEXT,
     PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED, EMAIL_NOT_UNIQUE, EMAIL_REQUIRED_ERROR,
     PASSWORD_REQUIRED_ERROR, FIRST_NAME_REQUIRED_ERROR, LAST_NAME_REQUIRED_ERROR, MOBILE_NUMBER_REQUIRED_ERROR,
-    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR, REGISTER_SUCCESS, PASSWORD_CHANGED_SUCCESS
+    COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR, REGISTER_SUCCESS, PASSWORD_CHANGED_SUCCESS, LOGIN_FAILED,
+    PROFILE_UPDATE_SUCCESS, PROFILE_DELETE_SUCCESS, PROFILE_PIC_REQUIRED_ERROR, PROFILE_PIC_DELETE_SUCCESS,
+    PROFILE_PIC_UPDATE_SUCCESS
 )
 from accounts.models import User
 from accounts.utils import send_email_verification_email
 from accounts.validators import validate_password, validate_first_name, validate_last_name, validate_mobile_number
 
 
-class LoginSerializer(TokenObtainPairSerializer):
+class LoginSerializer(TokenObtainPairSerializer, TokenObtainSerializer):
+    default_error_messages = {"no_active_account": LOGIN_FAILED}
+
     @classmethod
     def get_token(cls, user):
         token = super(LoginSerializer, cls).get_token(user)
@@ -92,7 +96,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     @property
     def data(self):
-        return {'message': REGISTER_SUCCESS}
+        data = super().data
+        return {**data, 'message': REGISTER_SUCCESS}
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -100,11 +105,55 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = User
         fields = ('first_name', 'last_name', 'email', 'job_title', 'company_name', 'mobile_number')
         extra_kwargs = {
-            'first_name': {'required': True, 'validators': [validate_first_name]},
-            'last_name': {'required': True, 'validators': [validate_last_name]},
-            'mobile_number': {'required': True, 'validators': [validate_mobile_number]},
+            'first_name': {
+                'required': True,
+                'allow_blank': False,
+                'validators': [validate_first_name],
+                'error_messages': {
+                    'required': FIRST_NAME_REQUIRED_ERROR,
+                    'blank': FIRST_NAME_REQUIRED_ERROR
+                }
+            },
+            'last_name': {
+                'required': True,
+                'allow_blank': False,
+                'validators': [validate_last_name],
+                'error_messages': {
+                    'required': LAST_NAME_REQUIRED_ERROR,
+                    'blank': LAST_NAME_REQUIRED_ERROR
+                }
+            },
+            'mobile_number': {
+                'validators': [validate_mobile_number],
+                'error_messages': {
+                    'required': MOBILE_NUMBER_REQUIRED_ERROR,
+                    'blank': MOBILE_NUMBER_REQUIRED_ERROR
+                }
+            },
+            'job_title': {
+                'error_messages': {
+                    'required': JOB_TITLE_REQUIRED_ERROR,
+                    'blank': JOB_TITLE_REQUIRED_ERROR
+                }
+            },
+            'company_name': {
+                'error_messages': {
+                    'required': COMPANY_NAME_REQUIRED_ERROR,
+                    'blank': COMPANY_NAME_REQUIRED_ERROR
+                }
+            },
             'email': {'read_only': True},
         }
+
+    @property
+    def data(self):
+        data = super().data
+        if self.context['request'].method == 'PUT':
+            data = {**data, 'message': PROFILE_UPDATE_SUCCESS}
+        elif self.context['request'].method == 'DELETE':
+            data = {**data, 'message': PROFILE_DELETE_SUCCESS}
+
+        return data
 
 
 class ProfilePicSerializer(serializers.ModelSerializer):
@@ -112,8 +161,24 @@ class ProfilePicSerializer(serializers.ModelSerializer):
         model = User
         fields = ('profile_pic',)
         extra_kwargs = {
-            'profile_pic': {'required': True, 'allow_null': False},
+            'profile_pic': {
+                'required': True,
+                'allow_null': False,
+                'error_messages': {
+                    'required': PROFILE_PIC_REQUIRED_ERROR,
+                    'blank': PROFILE_PIC_REQUIRED_ERROR
+                }
+            },
         }
+
+    @property
+    def data(self):
+        data = super().data
+
+        if self.context['request'].method == 'PUT':
+            data = {**data, 'message': PROFILE_PIC_UPDATE_SUCCESS}
+
+        return data
 
 
 class EmailSerializer(serializers.Serializer):

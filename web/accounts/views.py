@@ -9,10 +9,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView
 
 from accounts.constants import RESTORE_PASSWORD_LINK_SENT, EMAIL_VERIFIED_SUCCESS, EMAIL_VERIFICATION_LINK_SENT, \
-    INVALID_TOKEN
+    INVALID_TOKEN, LOGOUT_SUCCESS, PROFILE_PIC_DELETE_SUCCESS
 from accounts.mixins import ValidateRestorePassword
 from accounts.models import User, ActivateUserToken
 from accounts.serializers import (
@@ -52,6 +52,11 @@ class RetrieveUpdateDestroyProfilePicView(RetrieveUpdateDestroyAPIView):
         serializer.instance.profile_pic.delete()
         super().perform_update(serializer)
 
+    def destroy(self, request, *args, **kwargs):
+        response = super().destroy(request, *args, **kwargs)
+        response.data = {'message': PROFILE_PIC_DELETE_SUCCESS}
+        return response
+
 
 class VerifyEmailView(APIView):
     permission_classes = (AllowAny,)
@@ -65,7 +70,7 @@ class VerifyEmailView(APIView):
         """
         activate_user_token: ActivateUserToken = ActivateUserToken.get_object(query={'token': token})
         if activate_user_token is None:
-            raise ValidationError({'error': INVALID_TOKEN})
+            raise ValidationError({'message': INVALID_TOKEN})
 
         activate_user_token.user.activate()
         activate_user_token.delete_token()
@@ -94,6 +99,13 @@ class ResendVerifyEmailView(GenericAPIView):
 class LoginView(TokenObtainPairView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
+
+
+class LogoutView(TokenBlacklistView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        response.data = {'message': LOGOUT_SUCCESS}
+        return response
 
 
 class ForgotPasswordView(APIView):
