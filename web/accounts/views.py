@@ -69,6 +69,7 @@ class RetrieveUpdateDestroyProfilePicView(RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         response = super().delete(request, *args, **kwargs)
         response.data = {'message': PROFILE_PIC_DELETE_SUCCESS}
+        response.status_code = status.HTTP_200_OK
         return response
 
     def put(self, request, *args, **kwargs):
