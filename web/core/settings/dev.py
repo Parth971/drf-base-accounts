@@ -21,6 +21,7 @@ SIMPLE_JWT = {
 }
 
 FRONT_END_DOMAIN = os.environ.get('FRONT_END_DOMAIN')
+BACK_END_DOMAIN = os.environ.get('BACK_END_DOMAIN')
 
 # Forgot password link expiry time
 PASSWORD_RESET_TIMEOUT = int(os.environ.get("PASSWORD_RESET_TIMEOUT"))

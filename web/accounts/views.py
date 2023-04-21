@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import (
@@ -15,7 +16,7 @@ from accounts.constants import (
     RESTORE_PASSWORD_LINK_SENT, EMAIL_VERIFIED_SUCCESS, EMAIL_VERIFICATION_LINK_SENT,
     INVALID_TOKEN, LOGOUT_SUCCESS, PROFILE_PIC_DELETE_SUCCESS,
     LOGIN_SUCCESS, REFRESH_TOKEN_SUCCESS, REGISTER_SUCCESS,
-    PROFILE_UPDATE_SUCCESS, PROFILE_PIC_UPDATE_SUCCESS, PASSWORD_CHANGED_SUCCESS
+    PROFILE_UPDATE_SUCCESS, PROFILE_PIC_UPDATE_SUCCESS, PASSWORD_CHANGED_SUCCESS, DEFAULT_PROFILE_PIC_PATH
 )
 from accounts.mixins import ValidateRestorePassword
 from accounts.models import User, ActivateUserToken
@@ -70,6 +71,12 @@ class RetrieveUpdateDestroyProfilePicView(RetrieveUpdateDestroyAPIView):
         response = super().delete(request, *args, **kwargs)
         response.data = {'message': PROFILE_PIC_DELETE_SUCCESS}
         response.status_code = status.HTTP_200_OK
+        return response
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if response.data.get('profile_pic') is None:
+            response.data['profile_pic'] = settings.BACK_END_DOMAIN + DEFAULT_PROFILE_PIC_PATH
         return response
 
     def put(self, request, *args, **kwargs):

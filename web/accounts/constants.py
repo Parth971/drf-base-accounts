@@ -53,3 +53,6 @@ PROFILE_PIC_DELETE_SUCCESS = 'Profile picture deleted successfully'
 # Variables
 FIRST_NAME_MINIMUM_LENGTH = LAST_NAME_MINIMUM_LENGTH = 3
 FIRST_NAME_MAXIMUM_LENGTH = LAST_NAME_MAXIMUM_LENGTH = 20
+
+# Path
+DEFAULT_PROFILE_PIC_PATH = '/static/accounts/images/default_profile_pic.jpg'
