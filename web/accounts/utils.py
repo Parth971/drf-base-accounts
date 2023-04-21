@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 
 def send_forgot_password_email(user):
     token = PasswordResetTokenGenerator().make_token(user)
-    link = F"https://{settings.FRONT_END_DOMAIN}/auth/restore-password/{user.id}/{token}/"
+    link = F"{settings.FRONT_END_DOMAIN}/auth/restore-password/{user.id}/{token}/"
 
     context = {
         'subject': 'Restore Password',
@@ -17,7 +17,7 @@ def send_forgot_password_email(user):
 
 def send_email_verification_email(user):
     token = user.generate_activation_token()
-    link = F"https://{settings.FRONT_END_DOMAIN}/auth/verify-email/{token}"
+    link = F"{settings.FRONT_END_DOMAIN}/auth/verify-email/{token}"
     context = {
         'subject': 'Email Verification',
         'uri': link,
