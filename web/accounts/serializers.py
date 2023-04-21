@@ -48,18 +48,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         This function will create user instance and send email regarding email verification.
         :rtype: User object
         """
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            job_title=validated_data['job_title'],
-            company_name=validated_data['company_name'],
-            mobile_number=validated_data['mobile_number'],
-            is_active=False
-        )
+        user = User.objects.create_user(**validated_data, is_active=False)
         send_email_verification_email(user)
         return user
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'job_title', 'company_name', 'mobile_number')
+        extra_kwargs = {
+            'first_name': {'required': True, 'validators': [validate_first_name]},
+            'last_name': {'required': True, 'validators': [validate_last_name]},
+            'mobile_number': {'required': True, 'validators': [validate_mobile_number]},
+            'email': {'read_only': True}
+        }
 
 
 class EmailSerializer(serializers.Serializer):

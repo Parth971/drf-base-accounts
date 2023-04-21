@@ -10,7 +10,7 @@ from accounts.mixins import ValidateRestorePassword
 from accounts.models import User, ActivateUserToken
 from accounts.serializers import (
     LoginSerializer, RegisterSerializer, ChangePasswordSerializer,
-    RestorePasswordSerializer, ForgotPasswordSerializer, ResendVerifyEmailSerializer
+    RestorePasswordSerializer, ForgotPasswordSerializer, ResendVerifyEmailSerializer, ProfileSerializer
 )
 from accounts.utils import send_forgot_password_email, send_email_verification_email
 
@@ -19,6 +19,12 @@ class RegisterView(CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
+
+class UpdateProfileView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = ProfileSerializer
+    lookup_url_kwarg = 'uid'
 
 
 class VerifyEmailView(APIView):

@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenRefreshView, TokenBlacklistView
 from accounts.views import (
     RegisterView, LoginView, ForgotPasswordView,
     ChangePasswordView, RestorePasswordView, VerifyEmailView,
-    ResendVerifyEmailView
+    ResendVerifyEmailView, UpdateProfileView
 )
 
 urlpatterns = [
@@ -20,4 +20,5 @@ urlpatterns = [
     path('token/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', TokenBlacklistView.as_view(), name='logout_user'),
     path('change_password/', ChangePasswordView.as_view(), name='change_password'),
+    path('profile/<int:uid>/', UpdateProfileView.as_view(), name='update_profile'),
 ]
