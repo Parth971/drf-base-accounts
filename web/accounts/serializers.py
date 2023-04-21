@@ -47,3 +47,18 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
         )
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({'email': 'email is not valid!'})
+
+        return attrs
+
+
+
+
