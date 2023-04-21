@@ -1,3 +1,4 @@
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenObtainSerializer
@@ -7,7 +8,7 @@ from accounts.constants import (
     PASSWORD_MISMATCH, EMAIL_NOT_ACTIVATED, EMAIL_ALREADY_ACTIVATED, EMAIL_NOT_UNIQUE, EMAIL_REQUIRED_ERROR,
     PASSWORD_REQUIRED_ERROR, FIRST_NAME_REQUIRED_ERROR, LAST_NAME_REQUIRED_ERROR, MOBILE_NUMBER_REQUIRED_ERROR,
     COMPANY_NAME_REQUIRED_ERROR, JOB_TITLE_REQUIRED_ERROR, REGISTER_SUCCESS, PASSWORD_CHANGED_SUCCESS, LOGIN_FAILED,
-    PROFILE_UPDATE_SUCCESS, PROFILE_DELETE_SUCCESS, PROFILE_PIC_REQUIRED_ERROR, PROFILE_PIC_DELETE_SUCCESS,
+    PROFILE_UPDATE_SUCCESS, PROFILE_DELETE_SUCCESS, PROFILE_PIC_REQUIRED_ERROR,
     PROFILE_PIC_UPDATE_SUCCESS
 )
 from accounts.models import User
@@ -157,19 +158,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class ProfilePicSerializer(serializers.ModelSerializer):
+    profile_pic = Base64ImageField(required=True, allow_null=False, allow_empty_file=False, error_messages={
+        'required': PROFILE_PIC_REQUIRED_ERROR,
+        'blank': PROFILE_PIC_REQUIRED_ERROR
+    })
+
     class Meta:
         model = User
         fields = ('profile_pic',)
-        extra_kwargs = {
-            'profile_pic': {
-                'required': True,
-                'allow_null': False,
-                'error_messages': {
-                    'required': PROFILE_PIC_REQUIRED_ERROR,
-                    'blank': PROFILE_PIC_REQUIRED_ERROR
-                }
-            },
-        }
 
     @property
     def data(self):
