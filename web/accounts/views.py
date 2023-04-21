@@ -4,13 +4,19 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from accounts.constants import RESTORE_PASSWORD_LINK_SENT
 from accounts.mixins import ValidateRestorePassword
 from accounts.models import User
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from accounts.serializers import LoginSerializer, RegisterSerializer, ForgotPasswordSerializer, \
-    ChangePasswordSerializer, RestorePasswordSerializer
+from accounts.serializers import (
+    LoginSerializer,
+    RegisterSerializer,
+    ForgotPasswordSerializer,
+    ChangePasswordSerializer,
+    RestorePasswordSerializer
+)
 from accounts.utils import send_forgot_password_email
 
 
@@ -32,7 +38,7 @@ class ForgotPasswordView(APIView):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         send_forgot_password_email(user=User.get_user(query={'email': serializer.data['email']}))
-        return Response(data={'message': 'Restore password link has been sent to email.'}, status=status.HTTP_200_OK)
+        return Response(data={'message': RESTORE_PASSWORD_LINK_SENT}, status=status.HTTP_200_OK)
 
 
 class ChangePasswordView(UpdateAPIView):

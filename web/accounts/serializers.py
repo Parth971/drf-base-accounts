@@ -3,6 +3,7 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from accounts.constants import PASSWORD_MISMATCH, INVALID_EMAIL, INCORRECT_OLD_PASSWORD
 from accounts.models import User
 
 
@@ -36,7 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError({"password": PASSWORD_MISMATCH})
 
         return attrs
 
@@ -55,7 +56,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
     def validate(self, attrs):
         email = attrs.get('email')
         if not User.objects.filter(email=email).exists():
-            raise serializers.ValidationError({'email': 'email is not valid!'})
+            raise serializers.ValidationError({'email': INVALID_EMAIL})
 
         return attrs
 
@@ -71,14 +72,14 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
+            raise serializers.ValidationError({"password": PASSWORD_MISMATCH})
 
         return attrs
 
     def validate_old_password(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
-            raise serializers.ValidationError("Old password is not correct")
+            raise serializers.ValidationError(INCORRECT_OLD_PASSWORD)
         return value
 
     def update(self, instance, validated_data):
@@ -94,7 +95,7 @@ class RestorePasswordSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password2": "Password fields didn't match."})
+            raise serializers.ValidationError({"password2": PASSWORD_MISMATCH})
 
         return attrs
 
@@ -103,5 +104,3 @@ class RestorePasswordSerializer(serializers.Serializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-
-
