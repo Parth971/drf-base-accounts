@@ -1,5 +1,8 @@
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, UpdateAPIView, GenericAPIView, get_object_or_404
+from rest_framework.generics import (
+    CreateAPIView, UpdateAPIView, get_object_or_404,
+    RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
+)
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,7 +13,8 @@ from accounts.mixins import ValidateRestorePassword
 from accounts.models import User, ActivateUserToken
 from accounts.serializers import (
     LoginSerializer, RegisterSerializer, ChangePasswordSerializer,
-    RestorePasswordSerializer, ForgotPasswordSerializer, ResendVerifyEmailSerializer, ProfileSerializer
+    RestorePasswordSerializer, ForgotPasswordSerializer, ResendVerifyEmailSerializer,
+    ProfilePicSerializer, ProfileSerializer
 )
 from accounts.utils import send_forgot_password_email, send_email_verification_email
 
@@ -21,10 +25,28 @@ class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
 
 
-class UpdateProfileView(UpdateAPIView):
+class RetrieveUpdateProfileView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
-    lookup_url_kwarg = 'uid'
+
+    def get_object(self):
+        return self.request.user
+
+
+class RetrieveUpdateDestroyProfilePicView(RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = ProfilePicSerializer
+
+    def get_object(self):
+        return self.request.user
+
+    def perform_destroy(self, instance: User):
+        instance.profile_pic.delete()
+
+    def perform_update(self, serializer: serializer_class):
+        # This will delete old image file
+        serializer.instance.profile_pic.delete()
+        super().perform_update(serializer)
 
 
 class VerifyEmailView(APIView):

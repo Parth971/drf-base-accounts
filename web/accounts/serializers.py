@@ -61,7 +61,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             'first_name': {'required': True, 'validators': [validate_first_name]},
             'last_name': {'required': True, 'validators': [validate_last_name]},
             'mobile_number': {'required': True, 'validators': [validate_mobile_number]},
-            'email': {'read_only': True}
+            'email': {'read_only': True},
+        }
+
+
+class ProfilePicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('profile_pic',)
+        extra_kwargs = {
+            'profile_pic': {'required': True, 'allow_null': False},
         }
 
 
