@@ -13,5 +13,9 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @classmethod
+    def get_user(cls, query):
+        return cls.objects.filter(**query).first()
+
     def __str__(self):
         return self.email

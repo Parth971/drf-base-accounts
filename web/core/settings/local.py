@@ -15,3 +15,9 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(seconds=int(os.environ.get('ACCESS_TOKEN_LIFETIME', 60))),
     'REFRESH_TOKEN_LIFETIME': timedelta(seconds=int(os.environ.get('REFRESH_TOKEN_LIFETIME', 3600))),
 }
+
+FRONT_END_DOMAIN = os.environ.get('FRONT_END_DOMAIN')
+
+ALLOWED_HOSTS += [
+    FRONT_END_DOMAIN
+]

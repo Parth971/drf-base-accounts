@@ -88,4 +88,20 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return instance
 
 
+class RestorePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password2": "Password fields didn't match."})
+
+        return attrs
+
+    def update(self, validated_data, **kwargs):
+        user = self.context['user']
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
+
 
